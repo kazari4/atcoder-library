@@ -1,16 +1,15 @@
 # Source: https://github.com/kazari4/atcoder-library/blob/main/Strings/rolling_hash.py
-"""Substring hashes for a string, usable as a standalone AtCoder submission snippet."""
 
 
 class RollingHash:
-    """Polynomial rolling hash with half-open substring ranges [left, right)."""
+    """半開区間 [left, right) の部分文字列を扱うローリングハッシュ。"""
 
     MOD = (1 << 61) - 1
     DEFAULT_BASE = 911382323
 
     def __init__(self, text: str, base: int = DEFAULT_BASE) -> None:
         if not 1 < base < self.MOD:
-            raise ValueError("base must be between 2 and MOD - 1")
+            raise ValueError("base は 2 以上 MOD - 1 以下で指定してください")
 
         self._length = len(text)
         self.base = base
@@ -24,20 +23,20 @@ class RollingHash:
             ) % self.MOD
 
     def __len__(self) -> int:
-        """Return the length of the original string."""
+        """元の文字列の長さを返す。"""
         return self._length
 
     def get(self, left: int, right: int) -> int:
-        """Return the hash of [left, right); raise IndexError for an invalid range."""
+        """区間 [left, right) のハッシュを返す。不正な区間は IndexError。"""
         if not 0 <= left <= right <= self._length:
-            raise IndexError("substring range is out of bounds")
+            raise IndexError("区間は 0 <= left <= right <= 文字列長 を満たす必要があります")
         return (
             self._prefix[right]
             - self._prefix[left] * self._powers[right - left]
         ) % self.MOD
 
     def same(self, left1: int, right1: int, left2: int, right2: int) -> bool:
-        """Test whether two ranges have equal lengths and hashes."""
+        """2区間の長さとハッシュが一致するかを判定する。"""
         first = self.get(left1, right1)
         second = self.get(left2, right2)
         return right1 - left1 == right2 - left2 and first == second
